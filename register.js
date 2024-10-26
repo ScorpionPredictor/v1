@@ -1,8 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
-const app = express();
-const PORT = 3000;
+const http = require("http");
+const host = '74.58.207.68'; // e.g., '192.168.1.1' or 'example.com'
+const port = 8000; // You can choose any available port
 
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());
@@ -26,6 +27,14 @@ app.post('/register', (req, res) => {
 });
 
 // Start the server
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+const requestListener = function (req, res) {
+    res.writeHead(200);
+    res.end("Hello from the server!");
+};
+
+const server = http.createServer(requestListener);
+
+// Start the server
+server.listen(port, host, () => {
+    console.log(`Server is running on http://${host}:${port}`);
 });
