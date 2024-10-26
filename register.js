@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 const users = [];
 
 // Registration Endpoint
-app.post('/api/register', async (req, res) => {
+app.post('https://scorpionpredictor.github.io/register', async (req, res) => {
     const { email, password } = req.body;
 
     // Validate input
