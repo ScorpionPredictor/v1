@@ -1,47 +1,31 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const bcrypt = require('bcrypt');
+const fs = require('fs');
 const app = express();
+const PORT = 3000;
 
-// Middleware
+// Middleware to parse JSON bodies
 app.use(bodyParser.json());
 
-// In-memory user storage
-const users = [];
+// Registration endpoint
+app.post('/register', (req, res) => {
+    const { email } = req.body; // Extract email from request body
 
-// Registration Endpoint
-app.post('https://scorpionpredictor.github.io/register', async (req, res) => {
-    const { email, password } = req.body;
-
-    // Validate input
-    if (!email || !password) {
-        return res.status(400).send('Email and password are required.');
+    // Validate email
+    if (!email) {
+        return res.status(400).json({ message: 'Email is required' });
     }
 
-    // Check if user already exists
-    const existingUser  = users.find(user => user.email === email);
-    if (existingUser ) {
-        return res.status(400).send('User  already exists.');
-    }
-
-    try {
-        // Hash the password
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        // Create a new user
-        const newUser  = { email, password: hashedPassword };
-        users.push(newUser ); // Store user in the in-memory array
-
-        // Respond with success
-        res.status(201).send('User  registered successfully.');
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server error. Please try again later.');
-    }
+    // Save email to a .txt file
+    fs.appendFile('api/users.txt', email + '\n', (err) => {
+        if (err) {
+            return res.status(500).json({ message: 'Error saving email' });
+        }
+        res.status(201).json({ message: 'Email registered successfully' });
+    });
 });
 
 // Start the server
-const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on http://localhost:${PORT}`);
 });
